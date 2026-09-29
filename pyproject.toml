@@ -1,0 +1,26 @@
+[project]
+name = "openagy"
+version = "0.3.3"
+description = "Control Google Antigravity's language server from OpenCode: create conversations, send prompts, read replies."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "CC-BY-NC-4.0"
+dependencies = [
+    "mcp>=1.5.0",
+    "psutil>=5.9",
+]
+
+[project.urls]
+Homepage = "https://github.com/twentythreenineteen/openagy"
+
+[project.scripts]
+openagy = "openagy.cli:main"
+openagy-mcp = "openagy.mcp_server:main"
+openagy-install = "openagy.install:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["openagy*"]
