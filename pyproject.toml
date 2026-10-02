@@ -1,6 +1,6 @@
 [project]
 name = "openagy"
-version = "0.3.3"
+version = "0.3.4"
 description = "Control Google Antigravity's language server from OpenCode: create conversations, send prompts, read replies."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -73,6 +73,38 @@ class Openagy:
             })
         return {"default": resp.get("defaultAgentModelId"), "models": models}
 
+    # --------------------------------------------------------------- quota
+    def quota(self, force_refresh: bool = True) -> dict[str, Any]:
+        """Quota usage per model group (weekly + 5-hour limits, resets)."""
+        resp = self.client.get_quota(force_refresh=force_refresh)
+        groups: list[dict[str, Any]] = []
+        lowest: float | None = None
+        for g in resp.get("groups", []):
+            buckets = []
+            for b in g.get("buckets", []):
+                if b.get("disabled"):
+                    continue
+                pct = round((b.get("remainingFraction") or 0.0) * 100, 1)
+                if lowest is None or pct < lowest:
+                    lowest = pct
+                buckets.append({
+                    "id": b.get("bucketId"),
+                    "window": b.get("window"),
+                    "remainingPercent": pct,
+                    "resetTime": b.get("resetTime"),
+                    "description": b.get("description"),
+                })
+            groups.append({
+                "name": g.get("displayName"),
+                "description": g.get("description"),
+                "buckets": buckets,
+            })
+        result: dict[str, Any] = {"groups": groups, "lowestRemainingPercent": lowest}
+        if lowest is not None and lowest < 20:
+            result["note"] = ("Quota is running low on at least one limit — consider "
+                              "deferring heavy work or switching model groups.")
+        return result
+
     # ------------------------------------------------------ conversations
     def list(self, limit: int = 25) -> list[dict[str, Any]]:
         return list_conversations(limit=limit)

@@ -101,6 +101,8 @@ material only - regenerate them from your own install anytime with
 ## Tools exposed (MCP)
 
 - `openagy_status()` — port, app version, default model
+- `openagy_quota()` — usage limits per model group (weekly + 5-hour
+  windows, remaining %, reset times; flags low quota)
 - `openagy_list_models()` — model ids (`gemini-3.8-flash-high`, `custom-*`)
 - `openagy_list_conversations(limit)` — recent conversations
 - `openagy_ask(prompt, workspace?, model?, conversation_id?, raw?, inactivity_timeout?)`

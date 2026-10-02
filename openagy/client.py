@@ -109,6 +109,17 @@ class AntigravityClient:
         return AntigravityClient.workspace_uri(path).replace(":", "%3A", 1)
 
     # ------------------------------------------------------------- projects
+    def get_quota(self, force_refresh: bool = True) -> dict[str, Any]:
+        """RetrieveUserQuotaSummary — usage limits per model group.
+
+        Returns groups (e.g. 'Gemini Models') with buckets: weekly and
+        rolling 5-hour limits, remaining fraction, and reset times.
+        """
+        resp = self.rpc("RetrieveUserQuotaSummary", {
+            "request": {"project": ""}, "forceRefresh": bool(force_refresh),
+        }, timeout=60.0)
+        return resp.get("response", resp)
+
     def list_projects(self) -> list[dict[str, Any]]:
         """List all known projects (id, name, folder URIs) from the local
         registry at ~/.gemini/config/projects/*.json (complete and fast; the

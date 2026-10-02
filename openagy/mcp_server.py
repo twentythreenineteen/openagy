@@ -52,6 +52,15 @@ def list_models() -> dict[str, Any]:
 
 @mcp.tool()
 @_guard
+def quota(force_refresh: bool = True) -> dict[str, Any]:
+    """Check Antigravity quota usage: per-model-group limits (weekly and
+    5-hour windows), remaining percentages, and reset times. Call before
+    starting heavy or long-running work, or when requests fail."""
+    return _api.quota(force_refresh=force_refresh)
+
+
+@mcp.tool()
+@_guard
 def list_conversations(limit: int = 25) -> list[dict[str, Any]]:
     """List recent Antigravity conversations (id, title, workspace, status, killed).
 

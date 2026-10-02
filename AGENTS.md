@@ -2,7 +2,7 @@
 
 Everything an agent needs to drive Google Antigravity headlessly: create
 conversations, send prompts, read replies, manage projects and visibility.
-All wire details below were verified live against Antigravity 2.17.0
+All wire details below were verified live against Antigravity 2.17.0-2.19.1
 (2026-09-28). Code lives in this directory; run `python -m openagy --help`
 or use the `openagy_*` MCP tools from opencode.
 
@@ -92,6 +92,18 @@ Model `id`s (e.g. `gemini-3.8-flash-high`, user-added `custom-*`) map to
 {} → {"homeDirPath":"C:/Users/owens","homeDirUri":"file:///C:/Users/owens",
        "geminiDirUri":"file:///C:/Users/owens/.gemini"}
 ```
+
+### RetrieveUserQuotaSummary — usage limits
+```json
+{"request":{"project":""},"forceRefresh":true}
+ → {"response":{"groups":[{"displayName":"Gemini Models","buckets":[
+      {"bucketId":"gemini-weekly","window":"weekly",
+       "remainingFraction":0.988,"resetTime":"2026-10-09T17:39:50Z",
+       "description":"..."}]}]}}
+```
+Per-model-group quota: weekly and rolling 5-hour buckets with remaining
+fraction and reset times. Exposed as the `quota` MCP tool (adds
+`remainingPercent` and a `lowestRemainingPercent` rollup).
 
 ### ReadProjects — fetch projects by explicit ids
 ```json
@@ -282,13 +294,18 @@ exactly like the GUI. This mirrors `irb`/`mX` in the hub bundle.
 ## Using openagy
 
 - **opencode MCP tools**: `openagy_status`, `openagy_list_models`,
-  `openagy_list_conversations`, `openagy_ask(prompt, workspace?, model?,
-  conversation_id?, raw?, inactivity_timeout?)`, `openagy_wait(conversation_id,
-  timeout_seconds?, include_tools?)`, `openagy_read_conversation(id,
-  include_tools?)`, `openagy_delete_conversation(id)`. Prompts are sanitized
+  `openagy_quota`, `openagy_list_conversations`, `openagy_ask(prompt,
+  workspace?, model?, conversation_id?, raw?, inactivity_timeout?)`,
+  `openagy_wait(conversation_id, timeout_seconds?, include_tools?)`,
+  `openagy_answer_question(conversation_id, answers?, cancelled?)`,
+  `openagy_approve(conversation_id, allow?, scope?)`, `openagy_undo(
+  conversation_id, step_index?, keep_message?, conversation_only?)`,
+  `openagy_reask(conversation_id, prompt, keep_message?)`,
+  `openagy_read_conversation(id, include_tools?)`,
+  `openagy_delete_conversation(id)`. Prompts are sanitized
   by default (see sanitize.py; `raw: true` to bypass).
-- **CLI**: `python -m openagy status|models|list|ask|wait|read|delete` (from
-  this directory).
+- **CLI**: `python -m openagy status|models|quota|list|ask|wait|answer|
+  approve|undo|reask|read|delete` (from this directory).
 - **Python**: `from openagy.api import Openagy; Openagy().ask(prompt, workspace=...)`
   returns `{conversationId, status, reply, messages, error?}`.
 - Follow-ups: pass the same `conversationId`; openagy reuses the recorded

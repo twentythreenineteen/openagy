@@ -35,10 +35,17 @@ from pathlib import Path
 
 
 def extract_descriptors(main_js: str) -> list[tuple[str, bytes]]:
-    """Pull every `=Cc("base64...")` FileDescriptorProto from the bundle."""
+    """Pull every embedded FileDescriptorProto from the bundle.
+
+    Robust to minifier renames across app versions: instead of matching a
+    specific function name, match `=<fn>("base64...")` where the first
+    argument is a long base64 string, then validate by decoding — real
+    descriptors always start with the length-prefixed proto file name (0x0a).
+    """
+    des_call = re.compile(r'=[A-Za-z_$][A-Za-z0-9_$]*\("(?=[A-Za-z0-9+/]{100})')
     out: list[tuple[str, bytes]] = []
-    for m in re.finditer(r"=Cc\(", main_js):
-        i = m.end()
+    for m in des_call.finditer(main_js):
+        i = m.end() - 1  # position of the opening quote
         parts: list[str] = []
         while True:
             q = main_js.find('"', i)

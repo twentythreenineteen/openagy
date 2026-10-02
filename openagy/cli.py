@@ -21,6 +21,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("status", help="show language server target + default model")
     sub.add_parser("models", help="list available models")
+    sub.add_parser("quota", help="show quota usage per model group")
 
     sp = sub.add_parser("list", help="list conversations")
     sp.add_argument("--limit", type=int, default=25)
@@ -80,6 +81,8 @@ def main(argv: list[str] | None = None) -> int:
             _print(api.status())
         elif args.cmd == "models":
             _print(api.list_models())
+        elif args.cmd == "quota":
+            _print(api.quota())
         elif args.cmd == "list":
             _print(api.list(args.limit))
         elif args.cmd == "ask":

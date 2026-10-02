@@ -92,6 +92,8 @@ directly through the app's language server:
   never stack rephrased retries on a filtered turn.
 - `openagy_list_conversations` / `openagy_read_conversation` to find and read
   past conversations; `openagy_delete_conversation` to remove.
+- `openagy_quota()` — check Antigravity usage limits (weekly and 5-hour
+  windows) before starting heavy work or when requests fail.
 - Requires the Antigravity app to be running (it spawns `language_server`;
   openagy discovers port + CSRF automatically).
 - `/agy <prompt>` command wraps this for quick relays.
